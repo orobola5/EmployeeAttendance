@@ -5,6 +5,7 @@ import com.example.employeeattendance.Dto.Request.EmployeeRequest;
 import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
+import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
 import com.example.employeeattendance.Model.Data.Availability;
 import com.example.employeeattendance.Model.Data.Department;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,10 +77,7 @@ class EmployeeServiceTest {
         EmployeeCreateResponse response2= employeeService.addNewEmployee(request2);
         EmployeeCreateResponse response3= employeeService.addNewEmployee(request3);
 
-
-
     }
-
     @Test
     @DisplayName("test  to add a new employee")
     void addNewEmployee() {
@@ -93,7 +92,6 @@ class EmployeeServiceTest {
         EmployeeCreateResponse response= employeeService.addNewEmployee(request);
         assertNotNull(response);
     }
-
 
     @Test
     @DisplayName("test to find all department in the organisation")
@@ -142,7 +140,26 @@ class EmployeeServiceTest {
         availabilityDto.setAvailability(Availability.ABSENCE);
         String message = employeeService.registerAvailability(1L,availabilityDto);
         assertEquals("OK",message);
-    };
+
+        AvailabilityDto availabilityDto2 = new AvailabilityDto();
+        availabilityDto2.setAvailability(Availability.SICK_LEAVE);
+        String message2 = employeeService.registerAvailability(2L,availabilityDto2);
+        assertEquals("OK",message2);
+    }
+    @Test
+    @DisplayName("test to modify existing employee")
+    void testThatEmployeeDetailCanBeModify() {
+        UpdateDto updateDto=new UpdateDto();
+        updateDto.setFirstName("Lauretta");
+        Department department2 = departmentRepository.findByName("Marketing");
+        updateDto.setDepartment(department2);
+        Employee employee=employeeService.modifyEmployee(1l,updateDto);
+        assertEquals("Lauretta",employee.getFirstName());
+        assertEquals("Marketing",employee.getDepartment().getDepartmentName());
+
+    }
+
+
 
 
 }

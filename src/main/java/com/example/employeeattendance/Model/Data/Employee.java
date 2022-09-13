@@ -33,6 +33,12 @@ public class Employee {
     @Column(name = "date")
     private LocalDateTime localDateTime;
 
+    @Column(name="sign_in_time")
+    private LocalDateTime signInTime;
+
+    @Column(name="sign_out_time")
+    private LocalDateTime signOutTime;
+
     private Boolean signIn;
 
     private Availability availability;

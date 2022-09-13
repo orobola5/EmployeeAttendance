@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,25 +59,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transient
-    public Employee modifyEmployee(Long id, UpdateDto updateDto) {
-        Optional<Employee> employeeRepo = repository.findById(id);
-        Employee employee = employeeRepo.get();
+
+   public Employee modifyEmployee(long id, UpdateDto updateDto) {
+       Employee employeeRepo = repository.findById(id);
+
 
         if(updateDto.getFirstName()!= null){
-            employee.setFirstName(updateDto.getFirstName());
+            employeeRepo.setFirstName(updateDto.getFirstName());
         }
-        if(updateDto.getLastName()!=null){
-            employee.setLastName(updateDto.getLastName());
 
+        if(updateDto.getLastName()!=null){
+            employeeRepo.setLastName(updateDto.getLastName());
         }
+
         if(updateDto.getDepartment()!=null) {
-            employee.setDepartment(updateDto.getDepartment());
+            employeeRepo.setDepartment(updateDto.getDepartment());
         }
+
         if(updateDto.getAddress()!=null) {
-            employee.setAddress(updateDto.getAddress());
+            employeeRepo.setAddress(updateDto.getAddress());
         }
-        return  repository.save(employee);
+
+
+        return  repository.save(employeeRepo);
     }
 
     @Override
@@ -126,6 +131,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public String signIn(long id) {
         Employee employee = repository.findById(id);
         employee.setSignIn(true);
+        employee.setSignInTime(LocalDateTime.now());
         repository.save(employee);
         return "Successfully signed in";
     }
@@ -134,6 +140,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public String signOut(long id) {
         Employee employee = repository.findById(id);
         employee.setSignIn(false);
+        employee.setSignOutTime(LocalDateTime.now());
         repository.save(employee);
         return "Successfully signed out";
     }
@@ -145,4 +152,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         repository.save(employee);
         return "OK";
     }
+
+    @Override
+    public String findByDate(String date, long id) {
+        Employee employee = repository.findById(id);
+
+         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+
+        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
+        if(employee.getSignInTime()== dateTime){
+            return employee.getAvailability().name() + " "+ employee.getLocalDateTime().toString();
+
+        }
+        else throw new ResourceNotFoundException("Employee was not available at that period");
+    }
+
 }
