@@ -14,5 +14,7 @@ public class EmployeeRequest {
     private String lastName;
     private Gender gender;
     private String address;
-    private Department department;
+    private String department;
+    private String email;
+    private String password;
 }

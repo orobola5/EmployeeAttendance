@@ -1,15 +1,12 @@
 package com.example.employeeattendance.Dto.Response;
 
+
 import com.example.employeeattendance.Model.Data.Department;
 import com.example.employeeattendance.Model.Data.Gender;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-
-public class EmployeeResponse {
+@Data
+public class EmployeeDto {
     private String firstName;
     private String lastName;
     private Gender gender;

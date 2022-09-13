@@ -1,27 +1,83 @@
 package com.example.employeeattendance.Service;
 
+import com.example.employeeattendance.Dto.Request.AvailabilityDto;
 import com.example.employeeattendance.Dto.Request.EmployeeRequest;
-import com.example.employeeattendance.Dto.Response.EmployeeResponse;
-import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
+import com.example.employeeattendance.Dto.Response.DepartmentResponse;
+import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
+import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
+import com.example.employeeattendance.Model.Data.Availability;
 import com.example.employeeattendance.Model.Data.Department;
 import com.example.employeeattendance.Model.Data.Employee;
 import com.example.employeeattendance.Model.Data.Gender;
+import com.example.employeeattendance.Model.Repository.DepartmentRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.persistence.Transient;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 
 class EmployeeServiceTest {
+
+
     @Autowired
     EmployeeService employeeService;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
+
+    @BeforeEach
+    void setup(){
+        Department department1 = new Department();
+        department1.setDepartmentName("Admin");
+        Department department2 = new Department();
+        department2.setDepartmentName("Marketing");
+        Department department3 = new Department();
+        department3.setDepartmentName("Engineering");
+
+        departmentRepository.saveAll(List.of(department1,department2,department3));
+
+
+        EmployeeRequest request= new EmployeeRequest();
+        request.setFirstName("peace");
+        request.setLastName("Olanrewaju");
+        request.setGender(Gender.FEMALE);
+        request.setAddress("3,Chris Edward,Old Oko-Oba,Abule-Egba,Lagos.");
+        request.setPassword("1234");
+        request.setEmail("peace@yahoo.com");
+        request.setDepartment("Admin");
+
+        EmployeeRequest request2= new EmployeeRequest();
+        request2.setFirstName("John");
+        request2.setLastName("Excel");
+        request2.setGender(Gender.MALE);
+        request2.setAddress("XYZ");
+        request2.setPassword("1234");
+        request2.setEmail("excel@yahoo.com");
+        request2.setDepartment("Engineering");
+
+        EmployeeRequest request3= new EmployeeRequest();
+        request3.setFirstName("love");
+        request3.setLastName("queen");
+        request3.setGender(Gender.FEMALE);
+        request3.setAddress("Yaba, Sabo");
+        request3.setPassword("123444");
+        request3.setEmail("love@yahoo.com");
+        request3.setDepartment("Admin");
+
+
+        EmployeeCreateResponse response= employeeService.addNewEmployee(request);
+        EmployeeCreateResponse response2= employeeService.addNewEmployee(request2);
+        EmployeeCreateResponse response3= employeeService.addNewEmployee(request3);
+
+
+
+    }
 
     @Test
     @DisplayName("test  to add a new employee")
@@ -31,92 +87,62 @@ class EmployeeServiceTest {
         request.setLastName("Olanrewaju");
         request.setGender(Gender.FEMALE);
         request.setAddress("3,Chris Edward,Old Oko-Oba,Abule-Egba,Lagos.");
-
-        Department department= new Department();
-        department.setDepartmentName("Admin");
-        request.setDepartment(department);
-
-        EmployeeResponse response= employeeService.addNewEmployee(request);
+        request.setPassword("1234");
+        request.setEmail("peace@yahoo.com");
+        request.setDepartment("Admin");
+        EmployeeCreateResponse response= employeeService.addNewEmployee(request);
         assertNotNull(response);
-        assertEquals("peace", response.getFirstName());
-        assertEquals("Olanrewaju", response.getLastName());
-        assertEquals(Gender.FEMALE, response.getGender());
-        assertEquals("3,Chris Edward,Old Oko-Oba,Abule-Egba,Lagos.", response.getAddress());
-        assertEquals("Admin",response.getDepartment().getDepartmentName());
-
-
-        EmployeeRequest request2= new EmployeeRequest();
-        request2.setFirstName("AKinola");
-        request2.setLastName("Akintunde");
-        request2.setGender(Gender.MALE);
-        request2.setAddress("34,Abule-Egba,Lagos.");
-
-        Department department2= new Department();
-        department2.setDepartmentName("Accounting");
-        request2.setDepartment(department2);
-
-        EmployeeResponse response2= employeeService.addNewEmployee(request2);
-        assertNotNull(response2);
-        assertEquals("AKinola", response2.getFirstName());
-        assertEquals("Akintunde", response2.getLastName());
-        assertEquals(Gender.MALE, response2.getGender());
-        assertEquals("34,Abule-Egba,Lagos.", response2.getAddress());
-        assertEquals("Accounting",response2.getDepartment().getDepartmentName());
-
-
-
-
     }
 
-    @Test
-    @DisplayName("test  to modify an existing employee")
-    void modifyEmployee(){
-        UpdateDto updateDto = new UpdateDto();
-        updateDto.setFirstName("Lauretta");
-        Department department=new Department();
-        department.setDepartmentName("IT");
-        updateDto.setDepartment(department);
-        Employee employee= employeeService.modifyEmployee(1l,updateDto);
-        assertNotNull(employee);
-        assertEquals("Lauretta",employee.getFirstName());
-        assertEquals("IT",employee.getDepartment().getDepartmentName());
-
-    }
 
     @Test
     @DisplayName("test to find all department in the organisation")
     void testToFindAllDepartmentInTheOrganisation() {
-        List<Department> departmentList = employeeService.findAllDepartment();
+        DepartmentResponse departmentList = employeeService.findAllDepartment();
         assertNotNull(departmentList);
-        assertEquals(2, departmentList.size());
-
+        assertEquals(3, departmentList.getDepartments().size());
     }
 
     @Test
     @DisplayName("test to find all employee in the organisation")
     void testToFindAllEmployeeInTheOrganisation() {
-        List<Employee> employeeListList = employeeService.findAllEmployee();
+        EmployeeResponseDto employeeListList = employeeService.findAllEmployee();
         assertNotNull(employeeListList);
-        assertEquals(2,employeeListList.size());
-
+        System.out.println(employeeListList);
     }
 
 
     @Test
     @DisplayName("test to find each employee in the organisation by their department")
     void testToFindEmployeeInTheOrganisationByDepartment()throws ResourceNotFoundException {
-       Department department=new Department();
-       department.setDepartmentName("Admin");
-        Employee employee=employeeService.findEmployeeByDepartment(department).get();
+        List<Employee> employee=employeeService.findEmployeeByDepartment("Admin");
         assertNotNull(employee);
-        assertEquals("Admin",employee.getDepartment().getDepartmentName());
+        assertEquals(2,employee.size());
+        System.out.println(employee);
     }
 
+    @Test
+    @DisplayName("test to sign-in")
+    void testThatUserCanSignIn(){
+        String message = employeeService.signIn(1L);
+        assertEquals("Successfully signed in",message);
+    }
 
+    @Test
+    @DisplayName("test to sign-out")
+    void testThatUserCanSignOut(){
+        String message = employeeService.signOut(1L);
+        assertEquals("Successfully signed out",message);
+    }
 
-
-
-
+    @Test
+    @DisplayName("test for sick leave")
+    void testThatUserCanRegisterForAvailabilty(){
+        AvailabilityDto availabilityDto = new AvailabilityDto();
+        availabilityDto.setAvailability(Availability.ABSENCE);
+        String message = employeeService.registerAvailability(1L,availabilityDto);
+        assertEquals("OK",message);
+    };
 
 
 }

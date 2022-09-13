@@ -1,9 +1,14 @@
 package com.example.employeeattendance.Service;
 
+import com.example.employeeattendance.Dto.Request.AvailabilityDto;
 import com.example.employeeattendance.Dto.Request.EmployeeRequest;
-import com.example.employeeattendance.Dto.Response.EmployeeResponse;
+import com.example.employeeattendance.Dto.Response.DepartmentResponse;
+import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
+import com.example.employeeattendance.Dto.Response.EmployeeDto;
+import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
+import com.example.employeeattendance.Model.Data.Availability;
 import com.example.employeeattendance.Model.Data.Department;
 import com.example.employeeattendance.Model.Data.Employee;
 import com.example.employeeattendance.Model.Repository.DepartmentRepository;
@@ -13,9 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Transient;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,24 +32,29 @@ public class EmployeeServiceImpl implements EmployeeService {
    private final EmployeeRepository repository;
    private final DepartmentRepository departmentRepository;
     @Override
-    public EmployeeResponse addNewEmployee(EmployeeRequest request) {
+    public EmployeeCreateResponse addNewEmployee(EmployeeRequest request) {
+        Department department = departmentRepository.findByName(request.getDepartment());
+        if(department==null){
+            throw new ResourceNotFoundException("Department does not exist");
+        }
+
         Employee employee = new Employee();
         employee.setFirstName(request.getFirstName());
         employee.setLastName(request.getLastName());
         employee.setAddress(request.getAddress());
         employee.setGender(request.getGender());
-        employee.setDepartment(request.getDepartment());
-        departmentRepository.save(employee.getDepartment());
+        employee.setDepartment(department);
+        employee.setPassword(request.getPassword());
+        employee.setAvailability(Availability.PRESENCE);
+        employee.setLocalDateTime(LocalDateTime.now());
+        employee.setSignIn(false);
 
         Employee savedEmployee = repository.save(employee);
-        EmployeeResponse response = new EmployeeResponse();
-       response.setFirstName(savedEmployee.getFirstName());
-        response.setLastName(savedEmployee.getLastName());
-        response.setGender(savedEmployee.getGender());
-        response.setAddress(savedEmployee.getAddress());
-        response.setDepartment(savedEmployee.getDepartment());
-        return response;
 
+        EmployeeCreateResponse response = new EmployeeCreateResponse();
+        response.setMessage("Success");
+        response.setEmployee(savedEmployee);
+        return response;
     }
 
     @Override
@@ -68,27 +80,69 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> findAllEmployee() {
+    public EmployeeResponseDto findAllEmployee() {
+        List<Employee> employees = repository.findAllEmployee();
 
-        return repository.findAll();
+        List<EmployeeDto> allEmployees = new ArrayList<>();
 
-    }
-
-    @Override
-    public List<Department> findAllDepartment() {
-
-        return departmentRepository.findAll();
-    }
-
-    @Override
-    public Optional<Employee> findEmployeeByDepartment(Department department) {
-        log.info("###### FIND BY DEPARTMENT {}",department);
-        Optional<Employee> employees= repository.findEmployeeByDepartment(department);
-        if (employees.isEmpty()){
-            throw  new ResourceNotFoundException("employee is not in this department");
+        for(Employee e : employees){
+            EmployeeDto employeeDto = new EmployeeDto();
+            employeeDto.setFirstName(e.getFirstName());
+            employeeDto.setLastName(e.getLastName());
+            employeeDto.setGender(e.getGender());
+            employeeDto.setAddress(e.getAddress());
+            employeeDto.setDepartment(e.getDepartment());
+            allEmployees.add(employeeDto);
         }
 
-       return employees;
+        EmployeeResponseDto responseDto = new EmployeeResponseDto();
+        responseDto.setEmployeeList(allEmployees);
+        return  responseDto;
+    }
 
+    @Override
+    public DepartmentResponse findAllDepartment() {
+        List<Department> departments = departmentRepository.findAllDepartments();
+        DepartmentResponse response = new DepartmentResponse();
+        response.setDepartments(departments);
+       return  response;
+    }
+
+    @Override
+    public List<Employee> findEmployeeByDepartment(String department) {
+        List<Employee> employees = repository.findAllEmployee();
+
+        List<Employee> foundEmployee = new ArrayList<>();
+
+        for (Employee e : employees) {
+            if (Objects.equals(e.getDepartment().getDepartmentName(), department)) {
+                foundEmployee.add(e);
+            }
+        }
+        return foundEmployee;
+    }
+
+    @Override
+    public String signIn(long id) {
+        Employee employee = repository.findById(id);
+        employee.setSignIn(true);
+        repository.save(employee);
+        return "Successfully signed in";
+    }
+
+    @Override
+    public String signOut(long id) {
+        Employee employee = repository.findById(id);
+        employee.setSignIn(false);
+        repository.save(employee);
+        return "Successfully signed out";
+    }
+
+    @Override
+    public String registerAvailability(long id, AvailabilityDto availability) {
+        Employee employee = repository.findById(id);
+        employee.setAvailability(availability.getAvailability());
+        repository.save(employee);
+        return "OK";
     }
 }
