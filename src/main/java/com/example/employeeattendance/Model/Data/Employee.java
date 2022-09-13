@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,11 +26,18 @@ public class Employee {
     private Gender gender;
     @Column(name = "address")
     private String address;
-    @Column(name="email")
+    @Column(name="email", unique = true)
     private String email;
+    @Column(name="password")
+    private String password;
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
+    @Column(name = "date")
+    private LocalDateTime localDateTime;
 
+    private Boolean signIn;
+
+    private Availability availability;
 
 }
