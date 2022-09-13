@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee,Long> {
-
-    Optional<Employee> findEmployeeByDepartment(Department department);
+public interface DepartmentRepository extends JpaRepository<Department,Long> {
 
 }
+
 

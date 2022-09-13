@@ -21,10 +21,15 @@ public class Employee {
     private String firstName;
     @Column(name = "lastName")
     private String lastName;
+    @Column(name = "gender")
+    private Gender gender;
     @Column(name = "address")
     private String address;
-    @Column(name = "department")
-    @ManyToOne()
+    @Column(name="email")
+    private String email;
+    @ManyToOne
+    @JoinColumn(name = "department_id")
     private Department department;
+
 
 }
