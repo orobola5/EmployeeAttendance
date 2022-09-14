@@ -75,9 +75,5 @@ public class EmployeeController {
         return employeeService.registerAvailability(id,availability);
     }
 
-    @GetMapping("/{date}/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public String findByDate(@PathVariable("date") String date, @PathVariable("id") long id) {
-        return employeeService.findByDate(date, id);
-    }
+
 }

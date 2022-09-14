@@ -9,4 +9,8 @@ public interface DepartmentService {
     Department findDepartmentByName(String name);
 
     DepartmentResponse findAllDepartment();
+
+    void save(Department department1);
+
+    Department findByName(String department);
 }

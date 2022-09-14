@@ -1,7 +1,7 @@
 package com.example.employeeattendance.Dto.UpdateDto;
 
 import com.example.employeeattendance.Model.Data.Department;
-import com.example.employeeattendance.Model.Data.Gender;
+import com.example.employeeattendance.Model.Data.Enum.Gender;
 import lombok.Getter;
 import lombok.Setter;
 

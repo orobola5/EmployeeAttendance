@@ -18,9 +18,7 @@ public class DepartmentServiceImpl implements DepartmentService{
     public Department findDepartmentByName(String name) {
 
         Department department = departmentRepository.findByName(name);
-        if (department == null){
-            throw new ResourceNotFoundException("department not found");
-        }
+
         return department;
     }
 
@@ -30,5 +28,16 @@ public class DepartmentServiceImpl implements DepartmentService{
         DepartmentResponse response = new DepartmentResponse();
         response.setDepartments(departments);
         return  response;
+    }
+
+    @Override
+    public void save(Department department) {
+        departmentRepository.save(department);
+
+    }
+
+    @Override
+    public Department findByName(String department) {
+        return departmentRepository.findByName(department);
     }
 }

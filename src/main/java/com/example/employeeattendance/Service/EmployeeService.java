@@ -11,6 +11,7 @@ import com.example.employeeattendance.Model.Data.Employee;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Transient;
+import java.time.LocalDate;
 import java.util.List;
 @Service
 public interface EmployeeService {
@@ -30,5 +31,5 @@ public interface EmployeeService {
 
     String registerAvailability(long id, AvailabilityDto availability);
 
-    String findByDate(String date, long id);
+    void deleteAllEmployee();
 }

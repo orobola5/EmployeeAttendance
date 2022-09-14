@@ -2,24 +2,24 @@ package com.example.employeeattendance.Service;
 
 import com.example.employeeattendance.Dto.Request.AvailabilityDto;
 import com.example.employeeattendance.Dto.Request.EmployeeRequest;
-import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeDto;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
 import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
-import com.example.employeeattendance.Model.Data.Availability;
+import com.example.employeeattendance.Model.Data.Attendance;
+import com.example.employeeattendance.Model.Data.Enum.Availability;
 import com.example.employeeattendance.Model.Data.Department;
 import com.example.employeeattendance.Model.Data.Employee;
-import com.example.employeeattendance.Model.Repository.DepartmentRepository;
+import com.example.employeeattendance.Model.Repository.AttendanceRepository;
 import com.example.employeeattendance.Model.Repository.EmployeeRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,9 +33,14 @@ public class EmployeeServiceImpl implements EmployeeService {
    private final EmployeeRepository repository;
 
    private final DepartmentService departmentService;
+
+   private final AttendanceRepository attendanceRepository;
+
+
     @Override
     public EmployeeCreateResponse addNewEmployee(EmployeeRequest request) {
        Department department = departmentService.findDepartmentByName(request.getDepartment());
+
 
         Employee employee = new Employee();
         employee.setFirstName(request.getFirstName());
@@ -45,12 +50,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setDepartment(department);
         employee.setEmail(request.getEmail());
         employee.setPassword(request.getPassword());
-        employee.setAvailability(Availability.PRESENCE);
         employee.setLocalDateTime(LocalDateTime.now());
-        employee.setSignIn(false);
+        Attendance attendance=new Attendance();
+        attendance.setAvailability(Availability.PRESENCE);
+        attendance.setSignIn(false);
+
+      Attendance register=  attendanceRepository.save(attendance);
+        employee.setAttendance(register);
 
         Employee savedEmployee = repository.save(employee);
-
         EmployeeCreateResponse response = new EmployeeCreateResponse();
         response.setMessage("Success");
         response.setEmployee(savedEmployee);
@@ -136,8 +144,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new ResourceNotFoundException("wrong password");
         }
 
-        employee.setSignIn(true);
-        employee.setSignInTime(LocalDateTime.now());
+        Attendance attendance=new Attendance();
+        attendance.setSignIn(true);
+        attendance.setSignInTime(LocalDateTime.now());
+        Attendance signIn=  attendanceRepository.save(attendance);
+        employee.setAttendance(signIn);
         repository.save(employee);
         return "Successfully signed in";
     }
@@ -145,8 +156,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public String signOut(long id) {
         Employee employee = repository.findById(id);
-        employee.setSignIn(false);
-        employee.setSignOutTime(LocalDateTime.now());
+        Attendance attendance=new Attendance();
+        attendance.setSignIn(false);
+        attendance.setSignOutTime(LocalDateTime.now());
+        Attendance signOut=  attendanceRepository.save(attendance);
+        employee.setAttendance(signOut);
         repository.save(employee);
         return "Successfully signed out";
     }
@@ -154,24 +168,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public String registerAvailability(long id, AvailabilityDto availability) {
         Employee employee = repository.findById(id);
-        employee.setAvailability(availability.getAvailability());
+        Attendance attendance=new Attendance();
+        attendance.setAvailability(availability.getAvailability());
+        Attendance register=  attendanceRepository.save(attendance);
+        employee.setAttendance(register);
         repository.save(employee);
         return "OK";
     }
 
     @Override
-    public String findByDate(String date, long id) {
-        Employee employee = repository.findById(id);
-
-         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-
-
-        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
-        if(employee.getSignInTime()== dateTime){
-            return employee.getAvailability().name() + " "+ employee.getLocalDateTime().toString();
-
-        }
-        else throw new ResourceNotFoundException("Employee was not available at that period");
+    public void deleteAllEmployee() {
+        repository.deleteAll();
     }
+
 
 }

@@ -1,8 +1,6 @@
 package com.example.employeeattendance.Dto.Request;
 
-import com.example.employeeattendance.Model.Data.Department;
-import com.example.employeeattendance.Model.Data.Gender;
-import lombok.Data;
+import com.example.employeeattendance.Model.Data.Enum.Gender;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,4 +15,6 @@ public class EmployeeRequest {
     private String department;
     private String email;
     private String password;
+
+
 }

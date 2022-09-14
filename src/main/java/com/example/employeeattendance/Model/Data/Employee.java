@@ -1,6 +1,7 @@
 package com.example.employeeattendance.Model.Data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.employeeattendance.Model.Data.Enum.Availability;
+import com.example.employeeattendance.Model.Data.Enum.Gender;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,15 +33,8 @@ public class Employee {
     private Department department;
     @Column(name = "date")
     private LocalDateTime localDateTime;
-
-    @Column(name="sign_in_time")
-    private LocalDateTime signInTime;
-
-    @Column(name="sign_out_time")
-    private LocalDateTime signOutTime;
-
-    private Boolean signIn;
-
-    private Availability availability;
+    @OneToOne
+    @JoinColumn(name = "employee_id")
+    private Attendance attendance;
 
 }

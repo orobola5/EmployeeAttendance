@@ -8,18 +8,18 @@ import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
-import com.example.employeeattendance.Model.Data.Availability;
+import com.example.employeeattendance.Model.Data.Enum.Availability;
 import com.example.employeeattendance.Model.Data.Department;
 import com.example.employeeattendance.Model.Data.Employee;
-import com.example.employeeattendance.Model.Data.Gender;
+import com.example.employeeattendance.Model.Data.Enum.Gender;
 import com.example.employeeattendance.Model.Repository.DepartmentRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +34,7 @@ class EmployeeServiceTest {
     @Autowired
     DepartmentService departmentService;
 
-    @Autowired
-    DepartmentRepository departmentRepository;
+
 
     @BeforeEach
     void setup(){
@@ -46,35 +45,38 @@ class EmployeeServiceTest {
         Department department3 = new Department();
         department3.setDepartmentName("Engineering");
 
-        departmentRepository.saveAll(List.of(department1,department2,department3));
+//        departmentRepository.saveAll(List.of(department1,department2,department3));
 
+        departmentService.save(department1);
+        departmentService.save(department2);
+        departmentService.save(department3);
 
         EmployeeRequest request= new EmployeeRequest();
-        request.setFirstName("peace");
-        request.setLastName("Olanrewaju");
+        request.setFirstName("pepe");
+        request.setLastName("Ola");
         request.setGender(Gender.FEMALE);
-        request.setAddress("3,Chris Edward,Old Oko-Oba,Abule-Egba,Lagos.");
-        request.setPassword("1234");
+        request.setAddress("3,Chris Edward,Old Oko-Oba,Lagos.");
+        request.setPassword("1567");
         request.setEmail("peace@yahoo.com");
         request.setDepartment("Admin");
 
         EmployeeRequest request2= new EmployeeRequest();
-        request2.setFirstName("John");
+        request2.setFirstName("Jojo");
         request2.setLastName("Excel");
         request2.setGender(Gender.MALE);
-        request2.setAddress("XYZ");
-        request2.setPassword("1234");
+        request2.setAddress("AXYZ");
+        request2.setPassword("1212");
         request2.setEmail("excel@yahoo.com");
         request2.setDepartment("Engineering");
 
         EmployeeRequest request3= new EmployeeRequest();
-        request3.setFirstName("love");
-        request3.setLastName("queen");
+        request3.setFirstName("Dove");
+        request3.setLastName("Queen");
         request3.setGender(Gender.FEMALE);
-        request3.setAddress("Yaba, Sabo");
+        request3.setAddress("Yaba,Lagos");
         request3.setPassword("123444");
-        request3.setEmail("love@yahoo.com");
-        request3.setDepartment("Admin");
+        request3.setEmail("dove@yahoo.com");
+        request3.setDepartment("Marketing");
 
 
         EmployeeCreateResponse response= employeeService.addNewEmployee(request);
@@ -82,16 +84,21 @@ class EmployeeServiceTest {
         EmployeeCreateResponse response3= employeeService.addNewEmployee(request3);
 
     }
+
+//    @AfterEach
+//    void tearDown(){
+//        employeeService.deleteAllEmployee();
+//    }
     @Test
     @DisplayName("test  to add a new employee")
     void addNewEmployee() {
         EmployeeRequest request= new EmployeeRequest();
-        request.setFirstName("peace");
-        request.setLastName("Olanrewaju");
+        request.setFirstName("ope");
+        request.setLastName("Ola");
         request.setGender(Gender.FEMALE);
         request.setAddress("3,Chris Edward,Old Oko-Oba,Abule-Egba,Lagos.");
         request.setPassword("1234");
-        request.setEmail("peace@yahoo.com");
+        request.setEmail("tepe@yahoo.com");
         request.setDepartment("Admin");
         EmployeeCreateResponse response= employeeService.addNewEmployee(request);
         assertNotNull(response);
@@ -110,7 +117,7 @@ class EmployeeServiceTest {
     void testToFindAllEmployeeInTheOrganisation() {
         EmployeeResponseDto employeeListList = employeeService.findAllEmployee();
         assertNotNull(employeeListList);
-        System.out.println(employeeListList);
+//        System.out.println(employeeListList);
     }
 
 
@@ -119,7 +126,7 @@ class EmployeeServiceTest {
     void testToFindEmployeeInTheOrganisationByDepartment()throws ResourceNotFoundException {
         List<Employee> employee=employeeService.findEmployeeByDepartment("Admin");
         assertNotNull(employee);
-        assertEquals(2,employee.size());
+        assertEquals(1,employee.size());
         System.out.println(employee);
     }
 
@@ -128,7 +135,7 @@ class EmployeeServiceTest {
     void testThatUserCanSignIn(){
         SignInRequest signInRequest=new SignInRequest();
         signInRequest.setEmail("peace@yahoo.com");
-        signInRequest.setPassword("1234");
+        signInRequest.setPassword("1567");
         String message = employeeService.signIn(signInRequest);
         assertEquals("Successfully signed in",message);
         System.out.println(message);
@@ -159,7 +166,7 @@ class EmployeeServiceTest {
     void testThatEmployeeDetailCanBeModify() {
         UpdateDto updateDto=new UpdateDto();
         updateDto.setFirstName("Lauretta");
-        Department department2 = departmentRepository.findByName("Marketing");
+        Department department2 = departmentService.findByName("Marketing");
         updateDto.setDepartment(department2);
         Employee employee=employeeService.modifyEmployee(1l,updateDto);
         assertEquals("Lauretta",employee.getFirstName());
