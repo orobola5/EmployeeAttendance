@@ -5,6 +5,7 @@ import com.example.employeeattendance.Dto.Request.EmployeeRequest;
 import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
+import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
 import com.example.employeeattendance.Model.Data.Availability;
@@ -29,6 +30,9 @@ class EmployeeServiceTest {
 
     @Autowired
     EmployeeService employeeService;
+
+    @Autowired
+    DepartmentService departmentService;
 
     @Autowired
     DepartmentRepository departmentRepository;
@@ -96,7 +100,7 @@ class EmployeeServiceTest {
     @Test
     @DisplayName("test to find all department in the organisation")
     void testToFindAllDepartmentInTheOrganisation() {
-        DepartmentResponse departmentList = employeeService.findAllDepartment();
+        DepartmentResponse departmentList = departmentService.findAllDepartment();
         assertNotNull(departmentList);
         assertEquals(3, departmentList.getDepartments().size());
     }
@@ -122,8 +126,12 @@ class EmployeeServiceTest {
     @Test
     @DisplayName("test to sign-in")
     void testThatUserCanSignIn(){
-        String message = employeeService.signIn(1L);
+        SignInRequest signInRequest=new SignInRequest();
+        signInRequest.setEmail("peace@yahoo.com");
+        signInRequest.setPassword("1234");
+        String message = employeeService.signIn(signInRequest);
         assertEquals("Successfully signed in",message);
+        System.out.println(message);
     }
 
     @Test

@@ -5,8 +5,10 @@ import com.example.employeeattendance.Dto.Request.EmployeeRequest;
 import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
+import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Model.Data.Employee;
+import com.example.employeeattendance.Service.DepartmentService;
 import com.example.employeeattendance.Service.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final DepartmentService service;
 
 
     @PostMapping("/employee")
@@ -44,7 +47,7 @@ public class EmployeeController {
     @GetMapping("/department")
     @ResponseStatus(HttpStatus.OK)
     public DepartmentResponse findAllDepartment() {
-        return employeeService.findAllDepartment();
+        return service.findAllDepartment();
     }
 
     @GetMapping("/{department}/department")
@@ -53,10 +56,10 @@ public class EmployeeController {
         return  employeeService.findEmployeeByDepartment(department);
     }
 
-    @PostMapping ("/{id}/id")
+    @PostMapping ("/request")
     @ResponseStatus(HttpStatus.OK)
-    public String signIn(@PathVariable("id") long id) {
-        return employeeService.signIn(id);
+    public String signIn(@RequestBody SignInRequest request) {
+        return employeeService.signIn(request);
 
     }
     @PostMapping ("/{id}/id/sign-out")

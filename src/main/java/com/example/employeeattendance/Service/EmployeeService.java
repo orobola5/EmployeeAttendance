@@ -5,12 +5,14 @@ import com.example.employeeattendance.Dto.Request.EmployeeRequest;
 import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
+import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Model.Data.Employee;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.Transient;
 import java.util.List;
-
+@Service
 public interface EmployeeService {
     EmployeeCreateResponse addNewEmployee(EmployeeRequest request );
 
@@ -18,12 +20,11 @@ public interface EmployeeService {
 
     EmployeeResponseDto findAllEmployee();
 
-    DepartmentResponse findAllDepartment();
 
     List<Employee> findEmployeeByDepartment(String department);
 
 
-    String signIn(long id);
+    String signIn(SignInRequest signInRequest);
 
     String signOut(long id);
 

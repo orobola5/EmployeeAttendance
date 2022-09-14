@@ -6,6 +6,7 @@ import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeDto;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
+import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
 import com.example.employeeattendance.Exception.ResourceNotFoundException;
 import com.example.employeeattendance.Model.Data.Availability;
@@ -17,13 +18,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
 
 @Service
 @AllArgsConstructor
@@ -31,13 +31,11 @@ import java.util.Optional;
 
 public class EmployeeServiceImpl implements EmployeeService {
    private final EmployeeRepository repository;
-   private final DepartmentRepository departmentRepository;
+
+   private final DepartmentService departmentService;
     @Override
     public EmployeeCreateResponse addNewEmployee(EmployeeRequest request) {
-        Department department = departmentRepository.findByName(request.getDepartment());
-        if(department==null){
-            throw new ResourceNotFoundException("Department does not exist");
-        }
+       Department department = departmentService.findDepartmentByName(request.getDepartment());
 
         Employee employee = new Employee();
         employee.setFirstName(request.getFirstName());
@@ -45,6 +43,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setAddress(request.getAddress());
         employee.setGender(request.getGender());
         employee.setDepartment(department);
+        employee.setEmail(request.getEmail());
         employee.setPassword(request.getPassword());
         employee.setAvailability(Availability.PRESENCE);
         employee.setLocalDateTime(LocalDateTime.now());
@@ -80,6 +79,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepo.setAddress(updateDto.getAddress());
         }
 
+        if(updateDto.getGender()!=null) {
+            employeeRepo.setGender(updateDto.getGender());
+        }
+
+
 
         return  repository.save(employeeRepo);
     }
@@ -105,13 +109,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return  responseDto;
     }
 
-    @Override
-    public DepartmentResponse findAllDepartment() {
-        List<Department> departments = departmentRepository.findAllDepartments();
-        DepartmentResponse response = new DepartmentResponse();
-        response.setDepartments(departments);
-       return  response;
-    }
+
 
     @Override
     public List<Employee> findEmployeeByDepartment(String department) {
@@ -128,8 +126,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public String signIn(long id) {
-        Employee employee = repository.findById(id);
+    public String signIn(SignInRequest signInRequest) {
+        Employee employee = repository.findByEmail(signInRequest.getEmail());
+        if (employee == null){
+            throw new ResourceNotFoundException("email does not exist");
+        }
+
+        if (!Objects.equals(employee.getPassword(), signInRequest.getPassword())){
+            throw new ResourceNotFoundException("wrong password");
+        }
+
         employee.setSignIn(true);
         employee.setSignInTime(LocalDateTime.now());
         repository.save(employee);
