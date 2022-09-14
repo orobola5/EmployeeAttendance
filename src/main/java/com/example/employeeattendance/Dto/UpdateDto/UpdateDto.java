@@ -13,5 +13,7 @@ public class UpdateDto {
     private String lastName;
     private String address;
     private Department department;
-    public Gender gender;
+    private Gender gender;
+    private String Password;
+
 }

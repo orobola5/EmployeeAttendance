@@ -64,37 +64,36 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setEmployee(savedEmployee);
         return response;
     }
+@Override
+    public Employee modifyEmployee(long id, UpdateDto updateDto) {
 
-    @Override
-
-   public Employee modifyEmployee(long id, UpdateDto updateDto) {
-       Employee employeeRepo = repository.findById(id);
+        Employee employeeRepo = repository.findById(id);
 
 
-        if(updateDto.getFirstName()!= null){
+        if (updateDto.getFirstName() != null) {
             employeeRepo.setFirstName(updateDto.getFirstName());
         }
 
-        if(updateDto.getLastName()!=null){
+        if (updateDto.getLastName() != null) {
             employeeRepo.setLastName(updateDto.getLastName());
         }
 
-        if(updateDto.getDepartment()!=null) {
+        if (updateDto.getDepartment() != null) {
             employeeRepo.setDepartment(updateDto.getDepartment());
         }
 
-        if(updateDto.getAddress()!=null) {
+        if (updateDto.getAddress() != null) {
             employeeRepo.setAddress(updateDto.getAddress());
         }
 
-        if(updateDto.getGender()!=null) {
+        if (updateDto.getGender() != null) {
             employeeRepo.setGender(updateDto.getGender());
         }
 
-
-
         return  repository.save(employeeRepo);
     }
+
+
 
     @Override
     public EmployeeResponseDto findAllEmployee() {
@@ -103,19 +102,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeDto> allEmployees = new ArrayList<>();
 
         for(Employee e : employees){
-            EmployeeDto employeeDto = new EmployeeDto();
-            employeeDto.setFirstName(e.getFirstName());
-            employeeDto.setLastName(e.getLastName());
-            employeeDto.setGender(e.getGender());
-            employeeDto.setAddress(e.getAddress());
-            employeeDto.setDepartment(e.getDepartment());
-            allEmployees.add(employeeDto);
+                EmployeeDto employeeDto = new EmployeeDto();
+                employeeDto.setFirstName(e.getFirstName());
+                employeeDto.setLastName(e.getLastName());
+                employeeDto.setGender(e.getGender());
+                employeeDto.setAddress(e.getAddress());
+                employeeDto.setDepartment(e.getDepartment());
+                allEmployees.add(employeeDto);
+            }
+
+            EmployeeResponseDto responseDto = new EmployeeResponseDto();
+            responseDto.setEmployeeList(allEmployees);
+            return  responseDto;
         }
 
-        EmployeeResponseDto responseDto = new EmployeeResponseDto();
-        responseDto.setEmployeeList(allEmployees);
-        return  responseDto;
-    }
+
 
 
 
@@ -177,8 +178,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void deleteAllEmployee() {
-        repository.deleteAll();
+    public List<EmployeeDto> findByDateRange(LocalDate from, LocalDate to) {
+        List<Employee> employees =repository.findByDateJoinedBetween(from, to);
+        List<EmployeeDto> employeeDtos = new ArrayList<>();
+        for (Employee employee: employees) {
+//            employeeDtos.add(EmployeeDto.packo(employee));
+        }
+        return employeeDtos;
+    }
+
+    public String generateEmployeeId() {
+        long number = repository.findAll().size() + 1;
+        String id = String.format("%04d", number);
+        return "ST" + id;
+
     }
 
 

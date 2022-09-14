@@ -3,6 +3,7 @@ package com.example.employeeattendance.Service;
 import com.example.employeeattendance.Dto.Request.AvailabilityDto;
 import com.example.employeeattendance.Dto.Request.EmployeeRequest;
 import com.example.employeeattendance.Dto.Response.DepartmentResponse;
+import com.example.employeeattendance.Dto.Response.EmployeeDto;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
 import com.example.employeeattendance.Dto.SignInRequest;
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -127,7 +130,6 @@ class EmployeeServiceTest {
         List<Employee> employee=employeeService.findEmployeeByDepartment("Admin");
         assertNotNull(employee);
         assertEquals(1,employee.size());
-        System.out.println(employee);
     }
 
     @Test
@@ -174,7 +176,16 @@ class EmployeeServiceTest {
 
     }
 
+    @Test
+    public void testToFindEmployeeByDateRange(){
 
+        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate from =LocalDate.parse("2022-09-14", dateTimeFormatter);
+        LocalDate to =LocalDate.parse("2022-09-14", dateTimeFormatter);
+        List<EmployeeDto> employeeList = employeeService.findByDateRange(from, to);
+        assertEquals(2, employeeList.size());
+
+    }
 
 
 }

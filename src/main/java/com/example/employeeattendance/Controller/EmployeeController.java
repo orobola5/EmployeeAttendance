@@ -33,7 +33,7 @@ public class EmployeeController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee modifyEmployee(@PathVariable ("id")long id,@RequestBody UpdateDto updateDto){
+    public Employee modifyEmployee(@PathVariable ("id")long id, @RequestBody UpdateDto updateDto){
         return employeeService.modifyEmployee(id, updateDto);
 
     }

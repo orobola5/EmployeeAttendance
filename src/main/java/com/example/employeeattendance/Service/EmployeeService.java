@@ -4,6 +4,7 @@ import com.example.employeeattendance.Dto.Request.AvailabilityDto;
 import com.example.employeeattendance.Dto.Request.EmployeeRequest;
 import com.example.employeeattendance.Dto.Response.DepartmentResponse;
 import com.example.employeeattendance.Dto.Response.EmployeeCreateResponse;
+import com.example.employeeattendance.Dto.Response.EmployeeDto;
 import com.example.employeeattendance.Dto.Response.EmployeeResponseDto;
 import com.example.employeeattendance.Dto.SignInRequest;
 import com.example.employeeattendance.Dto.UpdateDto.UpdateDto;
@@ -31,5 +32,7 @@ public interface EmployeeService {
 
     String registerAvailability(long id, AvailabilityDto availability);
 
-    void deleteAllEmployee();
+    List<EmployeeDto> findByDateRange(LocalDate from, LocalDate to);
+
+
 }

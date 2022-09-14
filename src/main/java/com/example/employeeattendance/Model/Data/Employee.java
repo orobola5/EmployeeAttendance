@@ -16,6 +16,7 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+//    private String employeeId;
     @Column(name = "firstName")
     private String firstName;
     @Column(name = "lastName")
@@ -36,5 +37,7 @@ public class Employee {
     @OneToOne
     @JoinColumn(name = "employee_id")
     private Attendance attendance;
+
+
 
 }
